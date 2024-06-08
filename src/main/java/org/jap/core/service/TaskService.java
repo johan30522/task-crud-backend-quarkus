@@ -78,6 +78,21 @@ public class TaskService {
         return taskMapper.toResponse(existingTask);
     }
 
+    public TaskResponse updateStatus(Long id, String status, String email) {
+        Optional<UserResponse> user = userService.getUserByEmail(email);
+        if (user.isEmpty()) {
+            throw new IllegalArgumentException("User not found with email: " + email);
+        }
+        //find task by id and user.id
+        Task existingTask = taskRepository.find("id = ?1 and user.id = ?2", id, user.get().id()).firstResult();
+        if (existingTask == null) {
+            throw new IllegalArgumentException("Task not found with id: " + id);
+        }
+        existingTask.setStatus(status);
+        taskRepository.persist(existingTask);
+        return taskMapper.toResponse(existingTask);
+    }
+
     public boolean deleteTask(Long id, String email) {
         Optional<UserResponse> user = userService.getUserByEmail(email);
         if (user.isEmpty()) {

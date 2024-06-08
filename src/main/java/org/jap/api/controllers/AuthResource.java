@@ -50,6 +50,18 @@ public class AuthResource {
         }
     }
 
+    @GET
+    @Path("/validate-email")
+    @Produces(MediaType.APPLICATION_JSON)
+    public Response validateEmail(@QueryParam("email") String email){
+        // define response json object true or false for email exist
+
+        if(userService.emailExist(email)){
+            return Response.ok().entity(new ExistUserResponse(true)).build();
+        }
+        return Response.ok().entity(new ExistUserResponse(false)).build();
+    }
+
     @POST
     @Transactional
     @Path("/register")

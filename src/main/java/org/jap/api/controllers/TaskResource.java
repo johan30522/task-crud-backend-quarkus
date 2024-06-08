@@ -107,6 +107,28 @@ public class TaskResource {
         }
     }
 
+    @PUT
+    @Secured
+    @Transactional
+    @Path("/{id}/{status}")
+    @Produces(MediaType.APPLICATION_JSON)
+    public Response updateStatus(@Context SecurityContext securityContext, @PathParam("id") Long id, @PathParam("status")String status){
+        System.out.println("controller de status task");
+        System.out.println("controller de status task " + id);
+        System.out.println("controller de status task " + status);
+        if (id==null || id==0){
+            ValidationError validationError=new ValidationError("id","Task id is required");
+            ErrorResponse errorResponseId = new ErrorResponse("Validation error","", List.of(validationError));
+            return Response.status(Response.Status.BAD_REQUEST).entity(errorResponseId).build();
+        }
+        String username = securityContext.getUserPrincipal().getName();
+        if (username==null){
+            return Response.status(Response.Status.UNAUTHORIZED).entity(new ErrorResponse("User unauthorized","",List.of())).build();
+        }
+        TaskResponse taskResponse= taskService.updateStatus(id,status,username);
+        return Response.ok(taskResponse).build();
+    }
+
 
 
 }

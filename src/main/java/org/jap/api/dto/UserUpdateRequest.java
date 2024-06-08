@@ -7,7 +7,6 @@ public record UserUpdateRequest(
         Long id,
         @NotBlank
         String userName,
-        @NotBlank @Email
         String email,
         @NotBlank
         String phone,

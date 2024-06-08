@@ -72,7 +72,6 @@ public class UserService {
             throw new IllegalArgumentException("User not found with id: " + id);
         }
         existingUser.setName(userUpdateRequest.userName());
-        existingUser.setEmail(userUpdateRequest.email());
         existingUser.setPhone(userUpdateRequest.phone());
         existingUser.setAgeRange(userUpdateRequest.ageRange());
         userRepository.persist(existingUser);
@@ -97,6 +96,10 @@ public class UserService {
             throw new RuntimeException("Error decrypting password", e);
 
         }
+    }
+
+    public boolean emailExist(String email) {
+        return userRepository.findByEmail(email).isPresent();
     }
 
     public void deleteUser(Long id) {
