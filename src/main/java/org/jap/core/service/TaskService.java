@@ -22,13 +22,15 @@ public class TaskService {
     private TaskMapper taskMapper;
     private UserService userService;
     private UserMapper userMapper;
+    private ImageService imageService;
 
     @Inject
-    public TaskService(TaskRepository taskRepository, TaskMapper taskMapper, UserService userService,UserMapper userMapper) {
+    public TaskService(TaskRepository taskRepository, TaskMapper taskMapper, UserService userService, UserMapper userMapper, ImageService imageService) {
         this.taskRepository = taskRepository;
         this.taskMapper = taskMapper;
         this.userService=userService;
         this.userMapper=userMapper;
+        this.imageService = imageService;
     }
 
     public TaskResponse save (TaskCreateRequest request,String email){
@@ -98,8 +100,17 @@ public class TaskService {
         if (user.isEmpty()) {
             throw new IllegalArgumentException("User not found with email: " + email);
         }
-        //delete task by id and user.id
-        return taskRepository.delete("id = ?1 and user.id = ?2", id, user.get().id()) > 0;
+        // obtain the task by id and user.id in optional
+        Optional<Task> task = taskRepository.find("id = ?1 and user.id = ?2", id, user.get().id()).singleResultOptional();
+        if (task.isPresent()){
+            //delete image by task id if exist
+            imageService.deleteImageByTaskId(id);
+            //delete task
+            taskRepository.delete(task.get());
+            return true;
+        } else {
+            throw new IllegalArgumentException("Task not found with id: " + id);
+        }
     }
 
 

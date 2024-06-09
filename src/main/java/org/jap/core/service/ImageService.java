@@ -62,6 +62,11 @@ public class ImageService {
                 .map(imageMapper::toResponse);
     }
 
+    public void deleteImageByTaskId(Long taskId) {
+        Optional<Image> image = imageRepository.find("task.id", taskId).singleResultOptional();
+        image.ifPresent(value -> imageRepository.delete(value));
+    }
+
     @Transactional
     public ImageResponse update(Long id, ImageCreateRequest request) {
         Image existingImage = imageRepository.findById(id);

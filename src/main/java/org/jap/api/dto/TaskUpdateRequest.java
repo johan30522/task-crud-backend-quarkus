@@ -7,7 +7,6 @@ public record TaskUpdateRequest(
         String name,
         @NotBlank
         String status,
-        @NotBlank
         String imageUrl
 ) {
 }

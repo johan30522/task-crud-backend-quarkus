@@ -7,7 +7,6 @@ public record TaskCreateRequest(
         String name,
         @NotBlank
         String status,
-        @NotBlank
         String imageUrl
 ) {
 }

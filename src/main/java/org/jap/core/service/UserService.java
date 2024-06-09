@@ -78,6 +78,19 @@ public class UserService {
         return userMapper.toResponse(existingUser);
     }
 
+    public boolean deleteTask(Long id, String email) {
+        Optional<UserResponse> user = getUserByEmail(email);
+        if (user.isEmpty()) {
+            throw new IllegalArgumentException("User not found with email: " + email);
+        }
+        User existingUser = userRepository.find("id = ?1 and email = ?2", id, user.get().email()).firstResult();
+        if (existingUser == null) {
+            throw new IllegalArgumentException("Task not found with id: " + id);
+        }
+        userRepository.delete(existingUser);
+        return true;
+    }
+
     public UserResponse validateUser(String userName, String password) {
         Optional<User> userOpt = userRepository.findByEmail(userName);
         if (userOpt.isEmpty()) {

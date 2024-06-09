@@ -14,7 +14,9 @@ import org.jap.core.annotation.Secured;
 import org.jap.core.service.TaskService;
 import org.jap.core.service.ValidatorService;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 @Path("/api/task")
 @ApplicationScoped
@@ -96,12 +98,15 @@ public class TaskResource {
             ErrorResponse errorResponseId = new ErrorResponse("Validation error","", List.of(validationError));
             return Response.status(Response.Status.BAD_REQUEST).entity(errorResponseId).build();
         }
-        String username = securityContext.getUserPrincipal().getName();        if (username==null){
+        String username = securityContext.getUserPrincipal().getName();
+        if (username==null){
             return Response.status(Response.Status.UNAUTHORIZED).entity(new ErrorResponse("User unauthorized","",List.of())).build();
         }
         boolean deleted= taskService.deleteTask(id,username);
         if(deleted){
-            return Response.ok("Task deleted").build();
+            Map<String, String> response = new HashMap<>();
+            response.put("message", "Task deleted");
+            return Response.ok(response).build();
         }else{
             return Response.status(Response.Status.NOT_FOUND).entity(new ErrorResponse("Task not found","",List.of())).build();
         }
@@ -113,9 +118,6 @@ public class TaskResource {
     @Path("/{id}/{status}")
     @Produces(MediaType.APPLICATION_JSON)
     public Response updateStatus(@Context SecurityContext securityContext, @PathParam("id") Long id, @PathParam("status")String status){
-        System.out.println("controller de status task");
-        System.out.println("controller de status task " + id);
-        System.out.println("controller de status task " + status);
         if (id==null || id==0){
             ValidationError validationError=new ValidationError("id","Task id is required");
             ErrorResponse errorResponseId = new ErrorResponse("Validation error","", List.of(validationError));
