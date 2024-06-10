@@ -76,6 +76,20 @@ public class AuthResource {
         return Response.ok(userResponse).build();
     }
 
+    @POST
+    @Transactional
+    @Path("/register-with-tasks")
+    @Produces(MediaType.APPLICATION_JSON)
+    @Consumes(MediaType.APPLICATION_JSON)
+    public Response registerWithTasks(UserTaskCreateRequest userTaskCreateRequest) throws Exception {
+        ErrorResponse errorResponse = validatorService.validatorDto(userTaskCreateRequest);
+        if (errorResponse!=null) {
+            return Response.status(Response.Status.BAD_REQUEST).entity(errorResponse).build();
+        }
+        UserResponse userResponse=userService.createUserWithTasks(userTaskCreateRequest);
+        return Response.ok(userResponse).build();
+    }
+
     @GET
     @Path("/renew-token")
     @Secured

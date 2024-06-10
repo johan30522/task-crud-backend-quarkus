@@ -3,6 +3,7 @@ package org.jap.core.mapper;
 import jakarta.enterprise.context.ApplicationScoped;
 import org.jap.api.dto.UserRegisterRequest;
 import org.jap.api.dto.UserResponse;
+import org.jap.api.dto.UserTaskCreateRequest;
 import org.jap.api.dto.UserUpdateRequest;
 import org.jap.infrastructure.entity.User;
 
@@ -54,6 +55,22 @@ public class UserMapperImpl implements UserMapper {
         user.setEmail(userUpdateRequest.email());
         user.setPhone(userUpdateRequest.phone());
         user.setAgeRange(userUpdateRequest.ageRange());
+
+        return user;
+    }
+
+    @Override
+    public User toEntity(UserTaskCreateRequest userTaskCreateRequest) {
+
+        if(userTaskCreateRequest==null){
+            return null;
+        }
+        User user= new User();
+
+        user.setName(userTaskCreateRequest.userName());
+        user.setEmail(userTaskCreateRequest.email());
+        user.setPhone(userTaskCreateRequest.phone());
+        user.setAgeRange(userTaskCreateRequest.ageRange());
 
         return user;
     }

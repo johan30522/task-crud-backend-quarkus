@@ -47,6 +47,15 @@ public class TaskService {
         return taskMapper.toResponse(task);
     }
 
+    public boolean createTasks(List<TaskCreateRequest> tasks, User user) {
+        tasks.forEach(task -> {
+            Task newTask = taskMapper.toEntity(task);
+            newTask.setUser(user);
+            taskRepository.persist(newTask);
+        });
+        return true;
+    }
+
 
     public List<TaskResponse> getAll(String email){
         Optional<UserResponse> user = userService.getUserByEmail(email);

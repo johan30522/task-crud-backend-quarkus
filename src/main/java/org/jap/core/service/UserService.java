@@ -4,6 +4,7 @@ import jakarta.enterprise.context.ApplicationScoped;
 import jakarta.inject.Inject;
 import org.jap.api.dto.UserRegisterRequest;
 import org.jap.api.dto.UserResponse;
+import org.jap.api.dto.UserTaskCreateRequest;
 import org.jap.api.dto.UserUpdateRequest;
 import org.jap.core.mapper.UserMapper;
 import org.jap.infrastructure.entity.User;
@@ -21,13 +22,15 @@ public class UserService {
 
     UserRepository userRepository;
     UserMapper userMapper;
+    TaskService taskService;
 
     private KeyPair keyPair;
 
     @Inject
-    public UserService(UserRepository userRepository, UserMapper userMapper) throws Exception {
+    public UserService(UserRepository userRepository, UserMapper userMapper,TaskService taskService) throws Exception {
         this.userRepository = userRepository;
         this.userMapper = userMapper;
+        this.taskService= taskService;
         this.keyPair = RSAUtil.generateKeyPair();
     }
 
@@ -44,6 +47,15 @@ public class UserService {
         User user = userMapper.toEntity(userReq);
         user.setPassword(encryptedPassword);
         userRepository.persist(user);
+        return userMapper.toResponse(user);
+    }
+
+    public UserResponse createUserWithTasks(UserTaskCreateRequest userReq) throws Exception {
+        User user = userMapper.toEntity(userReq);
+        String encryptedPassword = RSAUtil.encrypt(userReq.password(), keyPair.getPublic());
+        user.setPassword(encryptedPassword);
+        userRepository.persist(user);
+        taskService.createTasks(userReq.tasks(), user);
         return userMapper.toResponse(user);
     }
 
